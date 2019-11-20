@@ -12,6 +12,16 @@
       "Properties": {
         "BucketName": {
           "Ref": "paramBucketName"
+        },
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "Id": "DeleteEverythingInThreeMonths",
+              "Prefix": "",
+              "Status": "Enabled",
+              "ExpirationInDays": "90"
+            }
+          ]
         }
       },
       "Type": "AWS::S3::Bucket"
