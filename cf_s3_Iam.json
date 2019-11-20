@@ -16,10 +16,24 @@
         "LifecycleConfiguration": {
           "Rules": [
             {
-              "Id": "DeleteEverythingInThreeMonths",
+              "Id": "MoveToInfrequentAccessin30AndToGlacierIn60Days",
+              "Status": "Enabled",
+              "Transitions": [
+                {
+                  "StorageClass": "STANDARD_IA",
+                  "TransitionInDays": 30
+                },
+                {
+                  "StorageClass": "GLACIER",
+                  "TransitionInDays": 60
+                }
+              ]
+            },
+            {
+              "Id": "DeleteEverythingInAYear",
               "Prefix": "",
               "Status": "Enabled",
-              "ExpirationInDays": "90"
+              "ExpirationInDays": "365"
             }
           ]
         }

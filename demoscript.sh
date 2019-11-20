@@ -1,5 +1,5 @@
 s3_role=$(aws sts assume-role \
-                    --role-arn "arn:aws:iam::236586087760:role/demos3stack1-S3AccessRole-1RQB8XHVYIJD8" \
+                    --role-arn "arn:aws:iam::236586087760:role/demos3stack-S3AccessRole-1D17P10W9MMZP" \
                     --role-session-name "S3UloadSession")
 
 export AWS_ACCESS_KEY_ID=$(echo $s3_role | jq -r .Credentials.AccessKeyId)

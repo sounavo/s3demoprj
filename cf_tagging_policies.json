@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "The AWS CloudFormation template for deployment of an s3 with tagging policy, IAM roles.",
+  "Description": "The AWS CloudFormation template for deployment of policy and group access based on tagged items in s3",
   "Resources": {
     "PolicyForAWSUsers": {
       "Type": "AWS::IAM::Policy",
@@ -24,36 +24,23 @@
             },
             {
               "Effect": "Allow",
-              "Action": "s3:GetObject",
+              "Action": [
+                "s3:GetObject",
+                "s3:GetObjectRetention",
+                "s3:GetObjectTagging",
+                "s3:PutObject",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
+                "s3:PutObjectAcl",
+                "s3:PutObjectRetention",
+                "s3:PutObjectVersionAcl"
+              ],
               "Resource": [
                 "arn:aws:s3:::sddemos3/*"
               ],
               "Condition": {
                 "StringEquals": {
                   "s3:ExistingObjectTag/org": "awstagged"
-                }
-              }
-            },
-            {
-              "Effect": "Allow",
-              "Action": [
-                "s3:PutObjectTagging"
-              ],
-              "Resource": [
-                "arn:aws:s3:::sddemos3/*"
-              ],
-              "Condition": {
-                "ForAllValues:StringLike": {
-                  "s3:RequestObjectTagKeys": [
-                    "Owner",
-                    "CreationDate"
-                  ]
-                },
-                "ForAnyValue:StringLike": {
-                  "s3:RequestObjectTagKeys": [
-                    "Owner",
-                    "CreationDate"
-                  ]
                 }
               }
             }
@@ -88,7 +75,17 @@
             },
             {
               "Effect": "Allow",
-              "Action": "s3:*",
+              "Action": [
+                "s3:GetObject",
+                "s3:GetObjectRetention",
+                "s3:GetObjectTagging",
+                "s3:PutObject",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
+                "s3:PutObjectAcl",
+                "s3:PutObjectRetention",
+                "s3:PutObjectVersionAcl"
+              ],
               "Resource": [
                 "arn:aws:s3:::sddemos3/*"
               ],
