@@ -1,0 +1,123 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "The AWS CloudFormation template for deployment of an s3 with tagging policy, IAM roles.",
+  "Resources": {
+    "PolicyForAWSUsers": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "PolicyForAWSUsers",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "s3:ListAllMyBuckets",
+                "s3:HeadBucket"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": "s3:ListBucket",
+              "Resource": "arn:aws:s3:::sddemos3"
+            },
+            {
+              "Effect": "Allow",
+              "Action": "s3:GetObject",
+              "Resource": [
+                "arn:aws:s3:::sddemos3/*"
+              ],
+              "Condition": {
+                "StringEquals": {
+                  "s3:ExistingObjectTag/org": "awstagged"
+                }
+              }
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "s3:PutObjectTagging"
+              ],
+              "Resource": [
+                "arn:aws:s3:::sddemos3/*"
+              ],
+              "Condition": {
+                "ForAllValues:StringLike": {
+                  "s3:RequestObjectTagKeys": [
+                    "Owner",
+                    "CreationDate"
+                  ]
+                },
+                "ForAnyValue:StringLike": {
+                  "s3:RequestObjectTagKeys": [
+                    "Owner",
+                    "CreationDate"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "Groups": [
+          {
+            "Ref": "UserGroupForAWS"
+          }
+        ]
+      }
+    },
+    "PolicyForNetflixUsers": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "PolicyForNetflixUsers",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "s3:ListAllMyBuckets",
+                "s3:HeadBucket"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": "s3:ListBucket",
+              "Resource": "arn:aws:s3:::sddemos3"
+            },
+            {
+              "Effect": "Allow",
+              "Action": "s3:*",
+              "Resource": [
+                "arn:aws:s3:::sddemos3/*"
+              ],
+              "Condition": {
+                "StringEquals": {
+                  "s3:ExistingObjectTag/org": "netflixtagged"
+                }
+              }
+            }
+          ]
+        },
+        "Groups": [
+          {
+            "Ref": "UserGroupForNetflix"
+          }
+        ]
+      }
+    },
+    "UserGroupForAWS": {
+      "Type": "AWS::IAM::Group",
+      "Properties": {
+        "Path": "/"
+      }
+    },
+    "UserGroupForNetflix": {
+      "Type": "AWS::IAM::Group",
+      "Properties": {
+        "Path": "/"
+      }
+    }
+  }
+}

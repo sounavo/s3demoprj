@@ -1,0 +1,122 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "The AWS CloudFormation template for deployment of an s3 with tagging policy, IAM roles.",
+  "Parameters": {
+    "paramBucketName": {
+      "Description": "Bucket Name",
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "DemoS3Bucket": {
+      "Properties": {
+        "BucketName": {
+          "Ref": "paramBucketName"
+        }
+      },
+      "Type": "AWS::S3::Bucket"
+    },
+    "S3AccessInstanceProfile": {
+      "Properties": {
+        "Path": "/",
+        "Roles": [
+          {
+            "Ref": "S3AccessRole"
+          }
+        ]
+      },
+      "Type": "AWS::IAM::InstanceProfile"
+    },
+    "S3AccessRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ec2.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Path": "/"
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "S3DemoBucketPolicy": {
+      "Properties": {
+        "Bucket": {
+          "Ref": "DemoS3Bucket"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:ListBucket",
+                "s3:GetBucketLocation"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "S3AccessRole",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "DemoS3Bucket"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "s3:GetObject",
+                "s3:GetObjectRetention",
+                "s3:GetObjectTagging",
+                "s3:PutObject",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
+                "s3:PutObjectAcl",
+                "s3:PutObjectRetention",
+                "s3:PutObjectVersionAcl"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "S3AccessRole",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "DemoS3Bucket"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Type": "AWS::S3::BucketPolicy"
+    }
+  }
+}
